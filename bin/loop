@@ -9,24 +9,38 @@ import os
 import sys
 
 
-def popen(txt, descr="", latest=False):
-    last = ""
+def popen(txt):
     for line in os.popen(txt).readlines():
-        ln1 = line.strip() 
-        if not latest and ln1:
-            print(ln1)
-        elif ln1:
-            last = ln1
-    if last:
-        t = descr + " " + last
-        print(t.strip())
+        print(line.strip())
     
 
 def main():
-    for fnn in os.listdir("src"):
-        os.chdir("src/%s" % fnn)
-        popen(" ".join(sys.argv[1:]), fnn, True)
-        os.chdir("..")
-        os.chdir("..")
-
+    if len(sys.argv) == 1:
+        print("loop <directory> <txt>")
+        return
+    cdr = os.getcwd()
+    if len(sys.argv) == 2:
+        print("loop <directory> <txt>")
+        return
+    wdr = os.path.abspath(os.path.expanduser(sys.argv[1]))
+    if not os.path.exists(wdr):
+        print("loop <directory> <txt>")
+        return
+    if not len(sys.argv) > 2:
+        print("loop <directory> <txt>")
+        return
+    print("## using %s" % wdr)
+    txt = " ".join(sys.argv[2:])
+    print("## exec %s" % txt)
+    for fnn in os.listdir(wdr):
+            path = os.path.abspath(os.path.join(wdr, fnn))
+            if not os.path.isdir(path):
+                continue
+            print("## chdir %s" % path)
+            os.chdir(path)
+            popen(txt)
+            os.chdir(wdr)
+    os.chdir(cdr)
+    
+    
 main()
